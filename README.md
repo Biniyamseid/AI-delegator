@@ -1,4 +1,4 @@
-# LangChainPro Agent System
+# Agent System
 
 A sophisticated hierarchical agent system built with Node.js, LangGraph, LangChain, and Weaviate vector database. This system features a delegating agent that can intelligently route queries to specialized tools including a Chart.js visualization tool and a RAG (Retrieval-Augmented Generation) agent.
 
