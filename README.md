@@ -32,7 +32,7 @@ The system consists of three main components:
 
    ```bash
    git clone <repository-url>
-   cd langchainpro
+   cd AI-delegator
    ```
 
 2. **Install dependencies**
