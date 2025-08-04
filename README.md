@@ -225,6 +225,7 @@ curl -X POST http://localhost:3000/query \
 
 ### 3. Combined Request
 
+
 ```bash
 curl -X POST http://localhost:3000/query \
   -H "Content-Type: application/json" \

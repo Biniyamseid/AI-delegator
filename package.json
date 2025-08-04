@@ -1,0 +1,41 @@
+{
+  
+  "name": "langchainpro-agent-system",
+  "version": "1.0.0",
+  "description": "Hierarchical agent system with Weaviate vector database and LangGraph",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "setup": "node src/setup/weaviate-setup.js",
+    "test": "node test-system.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@langchain/core": "^0.3.0",
+    "@langchain/google-genai": "^0.0.12",
+    "langchain": "^0.1.0",
+    "@langchain/langgraph": "^0.0.20",
+    "weaviate-ts-client": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": [
+    "langchain",
+    "langgraph",
+    "weaviate",
+    "rag",
+    "agent",
+    "vector-database"
+  ],
+  "author": "",
+  "license": "MIT"
+} 

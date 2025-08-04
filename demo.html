@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LangChainPro Agent System Demo</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .query-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .query-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 2px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .response-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .response-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .response-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .response-content {
+            line-height: 1.6;
+        }
+
+        .chart-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .file-ids {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .file-ids strong {
+            color: #1976d2;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .examples {
+            margin-top: 30px;
+        }
+
+        .examples h3 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        .example-queries {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .example-query {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .example-query:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .example-query h4 {
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .example-query p {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .system-status {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .system-status h3 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+
+        .status-value {
+            font-weight: 600;
+        }
+
+        .status-ok {
+            color: #28a745;
+        }
+
+        .status-error {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 LangChainPro Agent System</h1>
+            <p>Intelligent query processing with RAG, Chart.js, and LangGraph</p>
+        </div>
+
+        <div class="main-content">
+            <div class="system-status" id="systemStatus">
+                <h3>🔄 Checking system status...</h3>
+            </div>
+
+            <div class="input-section">
+                <textarea 
+                    class="query-input" 
+                    id="queryInput" 
+                    placeholder="Ask me anything! Try queries like 'What is machine learning?' or 'Create a bar chart showing sales data'"
+                    rows="3"
+                ></textarea>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="sendQuery()">🚀 Send Query</button>
+                    <button class="btn btn-secondary" onclick="clearResponse()">🗑️ Clear</button>
+                    <button class="btn btn-secondary" onclick="setupSystem()">🔧 Setup System</button>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing your query...</p>
+            </div>
+
+            <div class="response-section" id="responseSection" style="display: none;">
+                <div class="response-header">
+                    <div class="response-title">Response</div>
+                    <div class="response-status" id="responseStatus">Success</div>
+                </div>
+                <div class="response-content" id="responseContent"></div>
+            </div>
+
+            <div class="examples">
+                <h3>💡 Example Queries</h3>
+                <div class="example-queries">
+                    <div class="example-query" onclick="setQuery('What is machine learning?')">
+                        <h4>📚 Information Query</h4>
+                        <p>Ask about machine learning concepts and get detailed explanations with source references.</p>
+                    </div>
+                    
+                    <div class="example-query" onclick="setQuery('Create a bar chart showing monthly sales data')">
+                        <h4>📊 Chart Request</h4>
+                        <p>Request data visualization and get a Chart.js configuration for beautiful charts.</p>
+                    </div>
+                    
+                    <div class="example-query" onclick="setQuery('Explain neural networks and create a pie chart showing algorithm types')">
+                        <h4>🔄 Combined Request</h4>
+                        <p>Get both information and visualization in a single comprehensive response.</p>
+                    </div>
+                    
+                    <div class="example-query" onclick="setQuery('Hello! How are you today?')">
+                        <h4>👋 Direct Response</h4>
+                        <p>Simple greetings and general questions get direct responses from the AI.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000';
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSystemStatus();
+        });
+
+        async function checkSystemStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                const statusDiv = document.getElementById('systemStatus');
+                statusDiv.innerHTML = `
+                    <h3>✅ System Status</h3>
+                    <div class="status-item">
+                        <span>Server:</span>
+                        <span class="status-value status-ok">Running</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Weaviate:</span>
+                        <span class="status-value status-ok">Connected</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Agent:</span>
+                        <span class="status-value status-ok">Ready</span>
+                    </div>
+                `;
+            } catch (error) {
+                const statusDiv = document.getElementById('systemStatus');
+                statusDiv.innerHTML = `
+                    <h3>❌ System Status</h3>
+                    <div class="status-item">
+                        <span>Server:</span>
+                        <span class="status-value status-error">Not Connected</span>
+                    </div>
+                    <p>Please make sure the server is running on port 3000</p>
+                `;
+            }
+        }
+
+        async function setupSystem() {
+            showLoading(true);
+            try {
+                const response = await fetch(`${API_BASE}/setup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResponse('System Setup', data.message, 'success');
+                    checkSystemStatus();
+                } else {
+                    showResponse('Setup Error', data.error, 'error');
+                }
+            } catch (error) {
+                showResponse('Setup Error', error.message, 'error');
+            }
+            showLoading(false);
+        }
+
+        async function sendQuery() {
+            const query = document.getElementById('queryInput').value.trim();
+            if (!query) {
+                alert('Please enter a query');
+                return;
+            }
+
+            showLoading(true);
+            try {
+                const response = await fetch(`${API_BASE}/query`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResponse(data.response);
+                } else {
+                    showResponse('Query Error', data.error, 'error');
+                }
+            } catch (error) {
+                showResponse('Network Error', error.message, 'error');
+            }
+            showLoading(false);
+        }
+
+        function displayResponse(response) {
+            let content = `<p><strong>Answer:</strong> ${response.answer}</p>`;
+            
+            if (response.fileIds && response.fileIds.length > 0) {
+                content += `<div class="file-ids">
+                    <strong>Sources:</strong> ${response.fileIds.join(', ')}
+                </div>`;
+            }
+            
+            if (response.chartConfig) {
+                content += `<div class="chart-container">
+                    <h4>📊 Chart Configuration</h4>
+                    <p><strong>Type:</strong> ${response.chartConfig.type}</p>
+                    <p><strong>Title:</strong> ${response.chartConfig.options.plugins.title.text}</p>
+                    <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto;">${JSON.stringify(response.chartConfig, null, 2)}</pre>
+                </div>`;
+            }
+            
+            showResponse('Query Response', content, 'success');
+        }
+
+        function showResponse(title, content, status) {
+            document.getElementById('responseSection').style.display = 'block';
+            document.getElementById('responseTitle').textContent = title;
+            document.getElementById('responseContent').innerHTML = content;
+            document.getElementById('responseStatus').textContent = status === 'success' ? 'Success' : 'Error';
+            document.getElementById('responseStatus').className = `response-status status-${status}`;
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function clearResponse() {
+            document.getElementById('responseSection').style.display = 'none';
+            document.getElementById('queryInput').value = '';
+        }
+
+        function setQuery(query) {
+            document.getElementById('queryInput').value = query;
+        }
+
+        // Allow Enter key to send query
+        document.getElementById('queryInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendQuery();
+            }
+        });
+    </script>
+</body>
+</html> 
